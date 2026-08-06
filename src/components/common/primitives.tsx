@@ -71,9 +71,19 @@ export function Modal({
       if (e.key === 'Escape') onClose()
     }
     window.addEventListener('keydown', onKey)
-    ref.current?.querySelector<HTMLElement>('input, button, textarea')?.focus()
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
+
+  // Focus ONCE on mount — never on re-renders (that would steal focus
+  // mid-typing) — and prefer the dialog's first field over its buttons
+  // (the close X is first in DOM order).
+  useEffect(() => {
+    const body = ref.current?.querySelector('.modal-body')
+    const target =
+      body?.querySelector<HTMLElement>('input, textarea, select') ??
+      body?.querySelector<HTMLElement>('button')
+    target?.focus()
+  }, [])
 
   return (
     <div className="modal-backdrop" onPointerDown={(e) => e.target === e.currentTarget && onClose()}>
