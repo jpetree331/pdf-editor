@@ -1,0 +1,61 @@
+/* Design tokens — dark "pro tool chrome". The single source of visual truth. */
+:root {
+  /* Surfaces */
+  --bg-app: #1b1d21;          /* outermost chrome */
+  --bg-panel: #232529;        /* rails, sidebars, toolbars */
+  --bg-panel-raised: #2a2d33; /* cards, dialogs, hover surfaces */
+  --bg-canvas: #101114;       /* the page workspace well */
+  --bg-input: #17181b;
+
+  /* Lines */
+  --border: #34373e;
+  --border-strong: #45495299;
+
+  /* Text */
+  --text-primary: #e8eaed;
+  --text-secondary: #a5a9b1;
+  --text-muted: #6d7077;
+  --text-invert: #17181b;
+
+  /* Accent — a restrained Acrobat-adjacent blue */
+  --accent: #4f8ef7;
+  --accent-hover: #6ba1f8;
+  --accent-soft: #4f8ef72e;
+
+  /* Semantics — reserved deliberately */
+  --danger: #e5534b;          /* destructive actions + redaction only */
+  --warn: #d9a743;            /* honest-limitation notices only */
+  --ok: #57ab5a;
+
+  /* Type */
+  --font-ui: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Cascadia Code', 'IBM Plex Mono', monospace;
+  --fs-xs: 11px;
+  --fs-sm: 12.5px;
+  --fs-md: 14px;
+  --fs-lg: 16px;
+  --fs-xl: 20px;
+
+  /* Space & shape */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  /* Elevation */
+  --shadow-panel: 0 1px 3px #0006;
+  --shadow-pop: 0 8px 28px #000a;
+  --shadow-page: 0 2px 12px #000c;
+
+  /* Z-index scale */
+  --z-overlay-objects: 10;
+  --z-selection: 20;
+  --z-panels: 100;
+  --z-dialog: 1000;
+  --z-progress: 1100;
+}
