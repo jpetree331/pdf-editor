@@ -1,10 +1,13 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
-// Port 5179: 5173/5174/5178 are claimed by other local frontends.
+// Default port 5179: 5173/5174/5178 are claimed by other local frontends.
+// PORT env (set by tooling) wins when present.
 export default defineConfig({
   plugins: [react()],
-  server: { port: 5179 },
+  server: { port: Number(process.env.PORT) || 5179 },
+  // Pre-bundle worker-only deps so their first use doesn't trigger a dev reload.
+  optimizeDeps: { include: ['docx', 'fflate', 'pdf-lib', 'pdfjs-dist', 'nanoid'] },
   build: {
     target: 'es2022',
     rollupOptions: {

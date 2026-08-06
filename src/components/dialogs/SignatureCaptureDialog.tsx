@@ -104,7 +104,11 @@ export function SignatureCaptureDialog() {
             width={PAD_W}
             height={PAD_H}
             onPointerDown={(e) => {
-              e.currentTarget.setPointerCapture(e.pointerId)
+              try {
+                e.currentTarget.setPointerCapture(e.pointerId)
+              } catch {
+                // Synthetic or already-released pointers can't be captured — fine.
+              }
               drawingRef.current = true
               const ctx = e.currentTarget.getContext('2d')!
               const p = pos(e)

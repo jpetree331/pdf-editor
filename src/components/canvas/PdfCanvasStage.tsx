@@ -103,7 +103,11 @@ export function PdfCanvasStage() {
           style={{ width: viewport.width, height: viewport.height, cursor: TOOL_REGISTRY[activeToolId].cursor }}
           onPointerDown={(e) => {
             if (e.button !== 0 || !toolCtx) return
-            e.currentTarget.setPointerCapture(e.pointerId)
+            try {
+              e.currentTarget.setPointerCapture(e.pointerId)
+            } catch {
+              // Synthetic or already-released pointers can't be captured — fine.
+            }
             const ev = toToolEvent(e)
             if (ev) behavior.onPointerDown?.(toolCtx, ev, gestureRef.current)
             afterToolCall()

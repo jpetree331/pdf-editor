@@ -61,7 +61,11 @@ export async function rasterizePage(
   const proxy = await getPageProxy(state, page)
   if (proxy) {
     const pdfViewport = proxy.getViewport({ scale, rotation: totalRotation(page) })
-    await proxy.render({ canvasContext: ctx, viewport: pdfViewport, canvas }).promise
+    // intent: 'print' — renders without requestAnimationFrame pacing (which
+    // stalls in hidden tabs) and flattens annotations, which is what an
+    // export should do anyway.
+    await proxy.render({ canvasContext: ctx, viewport: pdfViewport, canvas, intent: 'print' })
+      .promise
   }
 
   const overlays = [...(state.overlaysByPage[page.id] ?? [])].sort((a, b) => a.zIndex - b.zIndex)
