@@ -16,6 +16,8 @@ export const TEXT_DEFAULTS = {
 export const HIGHLIGHT_COLOR = { r: 1, g: 0.85, b: 0.2 }
 export const HIGHLIGHT_OPACITY = 0.4
 export const ERASE_DEFAULT_FILL = { r: 1, g: 1, b: 1 }
+/** Redaction cover color. Must match --redact-fill in styles/tokens.css. */
+export const REDACT_FILL_HEX = '#101010'
 
 /** DPI used when a page must be rasterized (redaction, aggressive compress). */
 export const RASTER_DPI_PRESETS = [

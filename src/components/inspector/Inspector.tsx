@@ -7,6 +7,7 @@ import { TOOL_REGISTRY } from '../../config/tools'
 import type { ImageRef, OverlayObject, RGBColor, TextOverlay } from '../../lib/core/types'
 import { Button } from '../common/primitives'
 import { Icon } from '../common/Icon'
+import { rgbaCss } from '../../lib/core/color'
 import './Inspector.css'
 
 const TEXT_COLORS: Array<[string, RGBColor]> = [
@@ -23,10 +24,6 @@ const HIGHLIGHT_COLORS: Array<[string, RGBColor]> = [
   ['Blue', { r: 0.45, g: 0.75, b: 1 }],
   ['Pink', { r: 1, g: 0.6, b: 0.8 }],
 ]
-
-function css(c: RGBColor): string {
-  return `rgb(${Math.round(c.r * 255)}, ${Math.round(c.g * 255)}, ${Math.round(c.b * 255)})`
-}
 
 export async function fileToImageRef(file: File): Promise<ImageRef> {
   const bytes = new Uint8Array(await file.arrayBuffer())
@@ -131,7 +128,7 @@ export function Inspector() {
                 <button
                   key={name}
                   className="insp-swatch"
-                  style={{ background: css(color) }}
+                  style={{ background: rgbaCss(color) }}
                   title={name}
                   onClick={() =>
                     session.updateOverlay(overlay.pageId, overlay.id, { color })
@@ -224,7 +221,7 @@ function TextProps({ overlay }: { overlay: TextOverlay }) {
           <button
             key={name}
             className="insp-swatch"
-            style={{ background: css(color) }}
+            style={{ background: rgbaCss(color) }}
             title={name}
             onClick={() => patch({ color })}
           />

@@ -2,17 +2,14 @@
 // aggressive compression, and image export. Renders a page via pdf.js and
 // FUSES its overlays into the pixels — for redacted pages this is what
 // guarantees the underlying content is destroyed, not covered.
-import type {
-  DocumentSessionState,
-  OverlayObject,
-  PageState,
-  RGBColor,
-} from '../core/types'
+import type { DocumentSessionState, OverlayObject, PageState } from '../core/types'
 import { totalRotation } from '../core/types'
 import { CoordinateMapper } from '../core/coordinates/CoordinateMapper'
+import { rgbaCss } from '../core/color'
+import { wrapLines } from '../core/textWrap'
 import { bytesToBlob } from '../fileIO'
 import { getPageProxy } from './pdfjsLoader'
-import { HIGHLIGHT_OPACITY } from '../../config/constants'
+import { HIGHLIGHT_OPACITY, REDACT_FILL_HEX } from '../../config/constants'
 
 export interface RasterOptions {
   dpi: number
@@ -27,10 +24,6 @@ export interface RasterOutput {
   heightPx: number
   widthPt: number
   heightPt: number
-}
-
-function cssColor(c: RGBColor, alpha = 1): string {
-  return `rgba(${Math.round(c.r * 255)}, ${Math.round(c.g * 255)}, ${Math.round(c.b * 255)}, ${alpha})`
 }
 
 export async function rasterizePage(
@@ -149,23 +142,23 @@ async function paintOverlay(
   switch (overlay.type) {
     case 'highlight':
       ctx.globalCompositeOperation = 'multiply'
-      ctx.fillStyle = cssColor(overlay.color, HIGHLIGHT_OPACITY + 0.25)
+      ctx.fillStyle = rgbaCss(overlay.color, HIGHLIGHT_OPACITY + 0.25)
       ctx.fillRect(0, 0, innerW, innerH)
       break
     case 'erase':
-      ctx.fillStyle = cssColor(overlay.fillColor)
+      ctx.fillStyle = rgbaCss(overlay.fillColor)
       ctx.fillRect(0, 0, innerW, innerH)
       break
     case 'redact':
-      ctx.fillStyle = '#101010'
+      ctx.fillStyle = REDACT_FILL_HEX
       ctx.fillRect(0, 0, innerW, innerH)
       break
     case 'text': {
       const size = overlay.fontSize * scale
       ctx.font = `${overlay.bold ? '700' : '400'} ${size}px Helvetica, Arial, sans-serif`
-      ctx.fillStyle = cssColor(overlay.color)
+      ctx.fillStyle = rgbaCss(overlay.color)
       ctx.textBaseline = 'alphabetic'
-      const lines = wrapCanvasText(ctx, overlay.text, innerW)
+      const lines = wrapLines(overlay.text, innerW, (s) => ctx.measureText(s).width)
       const lineHeight = size * overlay.lineHeight
       lines.forEach((line, i) => {
         const y = size * 0.75 + i * lineHeight
@@ -195,24 +188,3 @@ async function paintOverlay(
   ctx.restore()
 }
 
-function wrapCanvasText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
-  const lines: string[] = []
-  for (const rawLine of text.split('\n')) {
-    const words = rawLine.split(/\s+/).filter(Boolean)
-    if (words.length === 0) {
-      lines.push('')
-      continue
-    }
-    let current = ''
-    for (const word of words) {
-      const candidate = current ? `${current} ${word}` : word
-      if (ctx.measureText(candidate).width <= maxWidth || !current) current = candidate
-      else {
-        lines.push(current)
-        current = word
-      }
-    }
-    lines.push(current)
-  }
-  return lines
-}

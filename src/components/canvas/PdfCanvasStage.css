@@ -40,7 +40,7 @@
 
 .crop-shade {
   position: absolute;
-  background: #10111480;
+  background: var(--canvas-shade);
   z-index: var(--z-selection);
   pointer-events: none;
 }

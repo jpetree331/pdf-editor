@@ -7,7 +7,6 @@ import type {
   HighlightOverlay,
   ImageOverlay,
   OverlayObject,
-  RGBColor,
   SignatureOverlay,
   TextOverlay,
 } from '../../lib/core/types'
@@ -15,13 +14,9 @@ import { totalRotation, type PageState } from '../../lib/core/types'
 import { useEditor } from '../../state/EditorContext'
 import { useSessionState } from '../../hooks/useSessionState'
 import { bytesToBlob } from '../../lib/fileIO'
+import { rgbaCss } from '../../lib/core/color'
 import { rotatedContentStyle } from './rotationCss'
 import './OverlayLayer.css'
-
-function cssColor(c: RGBColor, alpha = 1): string {
-  const to255 = (v: number) => Math.round(v * 255)
-  return `rgba(${to255(c.r)}, ${to255(c.g)}, ${to255(c.b)}, ${alpha})`
-}
 
 function useImageUrl(bytes: Uint8Array, mime: string): string {
   const url = useMemo(() => URL.createObjectURL(bytesToBlob(bytes, mime)), [bytes, mime])
@@ -48,7 +43,7 @@ function TextView({ overlay, mapper, page }: RendererProps<TextOverlay>) {
     fontFamily: 'Helvetica, Arial, sans-serif',
     fontSize: overlay.fontSize * scale,
     lineHeight: overlay.lineHeight,
-    color: cssColor(overlay.color),
+    color: rgbaCss(overlay.color),
     textAlign: overlay.align,
     fontWeight: overlay.bold ? 700 : 400,
   }
@@ -108,11 +103,11 @@ function ImageLikeView({ overlay, mapper, page }: RendererProps<ImageOverlay | S
 }
 
 function HighlightView({ overlay }: RendererProps<HighlightOverlay>) {
-  return <div className="ov-highlight" style={{ background: cssColor(overlay.color, 0.45) }} />
+  return <div className="ov-highlight" style={{ background: rgbaCss(overlay.color, 0.45) }} />
 }
 
 function EraseView({ overlay }: RendererProps<EraseOverlay>) {
-  return <div className="ov-erase" style={{ background: cssColor(overlay.fillColor) }} />
+  return <div className="ov-erase" style={{ background: rgbaCss(overlay.fillColor) }} />
 }
 
 function RedactView() {

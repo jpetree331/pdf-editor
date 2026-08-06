@@ -14,6 +14,7 @@ function page(id: string): PageState {
     baseRotation: 0,
     cropBox: null,
     baseSize: { width: 612, height: 792 },
+    baseOrigin: { x: 0, y: 0 },
   }
 }
 

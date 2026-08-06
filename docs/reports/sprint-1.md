@@ -39,9 +39,22 @@ Everything on Tim's list, client-side only (files never leave the browser):
 - Password-protected PDFs are refused with a clear message.
 - Signatures are visual, not certificate-based.
 
+## Code review pass
+
+Two independent reviewers (correctness; conventions/simplicity) audited the
+finished build. Conventions: extracted shared `rgbaCss` and `wrapLines`
+helpers (three duplicate color converters, two duplicate word-wrappers),
+tokenized the redact fill and alpha-derived colors, removed stale matrix
+exports. Correctness found one real latent bug, now fixed with tests: source
+PDFs whose native `/CropBox` differs from `/MediaBox` (print-style exports)
+were modeled in the MediaBox frame while pdf.js renders the CropBox∩MediaBox
+frame — overlays and redaction boxes could drift on such files. `PageState`
+now carries the effective view box (`baseSize` + `baseOrigin`); the bake
+pipeline shifts overlay/crop coordinates into user space.
+
 ## Verification
 
-- 53 tests green (`npm test`): CoordinateMapper golden fixtures ×4 rotations,
+- 55 tests green (`npm test`): CoordinateMapper golden fixtures ×4 rotations,
   command/inverse round-trips, session ops, bake pipeline (reorder, rotation,
   crop, blank pages, overlays, subsets, raster path, redact-guard), xlsx
   validity, page-range parsing.

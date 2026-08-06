@@ -30,6 +30,7 @@ function pageState(id: string, sourceId: string, index: number, extra?: Partial<
     baseRotation: 0,
     cropBox: null,
     baseSize: { width: 612, height: 792 },
+    baseOrigin: { x: 0, y: 0 },
     ...extra,
   }
 }
@@ -128,6 +129,25 @@ describe('bakeDocument', () => {
 
     // Without the raster, the redacted page must be refused, not silently covered.
     await expect(bakeDocument({ state, rasterized: {} })).rejects.toThrow(/redact/i)
+  })
+
+  it('offsets session crop by the page view-box origin', async () => {
+    const state = await makeState()
+    state.pages = [
+      {
+        ...state.pages[0],
+        baseOrigin: { x: 20, y: 30 },
+        baseSize: { width: 572, height: 742 },
+        cropBox: { x: 10, y: 10, width: 100, height: 100 },
+      },
+    ]
+    const bytes = await bakeDocument({ state, rasterized: {} })
+    const result = await PDFDocument.load(bytes)
+    const crop = result.getPage(0).getCropBox()
+    expect(crop.x).toBe(30)
+    expect(crop.y).toBe(40)
+    expect(crop.width).toBe(100)
+    expect(crop.height).toBe(100)
   })
 
   it('extracts a subset in state order', async () => {

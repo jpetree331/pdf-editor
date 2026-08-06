@@ -6,7 +6,7 @@
 // Screen-space convention matches a pdf.js viewport created with
 // rotation = totalRotation(page) and the same scale.
 import type { Point, Rect, Rotation } from '../types'
-import { type Matrix2D, applyToPoint, invert, multiply } from './matrix'
+import { type Matrix2D, applyToPoint, invert } from './matrix'
 
 export interface PageGeometry {
   /** MediaBox size in the page's unrotated space (PDF points). */
@@ -97,6 +97,3 @@ function transformRect(m: Matrix2D, r: Rect): Rect {
   const minY = Math.min(...ys)
   return { x: minX, y: minY, width: Math.max(...xs) - minX, height: Math.max(...ys) - minY }
 }
-
-// Re-export composition helpers for the rasterizer, which needs the raw matrix.
-export { multiply, toScreenMatrix }

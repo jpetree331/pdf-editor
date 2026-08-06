@@ -36,6 +36,18 @@ describe('PdfDocumentSession', () => {
     ).rejects.toBeInstanceOf(PdfLoadError)
   })
 
+  it('uses the native CropBox∩MediaBox as the page frame', async () => {
+    const doc = await PDFDocument.create()
+    const page = doc.addPage([612, 792])
+    page.setCropBox(20, 30, 572, 742)
+    const session = await PdfDocumentSession.fromFiles([
+      { bytes: await doc.save(), fileName: 'cropped.pdf' },
+    ])
+    const loaded = session.getState().pages[0]
+    expect(loaded.baseSize).toEqual({ width: 572, height: 742 })
+    expect(loaded.baseOrigin).toEqual({ x: 20, y: 30 })
+  })
+
   it('rotate accumulates and undoes', async () => {
     const session = await PdfDocumentSession.fromFiles([
       { bytes: await makePdf(1), fileName: 'a.pdf' },

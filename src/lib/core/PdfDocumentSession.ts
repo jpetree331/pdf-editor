@@ -43,7 +43,19 @@ async function loadSource(bytes: Uint8Array, fileName: string): Promise<LoadedSo
   }
   const sourceId: SourceId = newId()
   const pages: PageState[] = doc.getPages().map((page, i) => {
-    const { width, height } = page.getSize()
+    // pdf.js renders the intersection of the page's native CropBox and
+    // MediaBox; using pdf-lib's MediaBox-only getSize() here would put every
+    // overlay (and redaction) in a drifted frame on print-style PDFs.
+    const media = page.getMediaBox()
+    const crop = page.getCropBox()
+    const x1 = Math.max(media.x, crop.x)
+    const y1 = Math.max(media.y, crop.y)
+    const x2 = Math.min(media.x + media.width, crop.x + crop.width)
+    const y2 = Math.min(media.y + media.height, crop.y + crop.height)
+    const view =
+      x2 > x1 && y2 > y1
+        ? { x: x1, y: y1, width: x2 - x1, height: y2 - y1 }
+        : { x: media.x, y: media.y, width: media.width, height: media.height }
     return {
       id: newId(),
       sourceId,
@@ -51,7 +63,8 @@ async function loadSource(bytes: Uint8Array, fileName: string): Promise<LoadedSo
       rotation: 0,
       baseRotation: (((page.getRotation().angle % 360) + 360) % 360) as Rotation,
       cropBox: null,
-      baseSize: { width, height },
+      baseSize: { width: view.width, height: view.height },
+      baseOrigin: { x: view.x, y: view.y },
     }
   })
   return {
@@ -176,6 +189,7 @@ export class PdfDocumentSession {
       baseRotation: 0,
       cropBox: null,
       baseSize: template ? { ...template.baseSize } : { width: 612, height: 792 },
+      baseOrigin: { x: 0, y: 0 },
     }
     this.dispatch(
       { kind: 'INSERT_PAGES', index: afterIndex + 1, pages: [page], newSources: [] },

@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   background:
-    radial-gradient(ellipse 60% 50% at 50% 0%, #4f8ef70d, transparent),
+    radial-gradient(ellipse 60% 50% at 50% 0%, var(--accent-glow), transparent),
     var(--bg-app);
 }
 .home-inner {
@@ -48,8 +48,8 @@
 .home-error {
   color: var(--danger);
   font-size: var(--fs-sm);
-  background: #e5534b1a;
-  border: 1px solid #e5534b55;
+  background: var(--danger-soft-bg);
+  border: 1px solid var(--danger-soft-border);
   border-radius: var(--radius-md);
   padding: var(--sp-2) var(--sp-3);
 }

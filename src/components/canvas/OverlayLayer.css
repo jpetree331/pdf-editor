@@ -46,6 +46,6 @@
 }
 .ov-highlight { mix-blend-mode: multiply; }
 .ov-redact {
-  background: #101010;
+  background: var(--redact-fill);
   outline: 1px dashed var(--danger);
 }

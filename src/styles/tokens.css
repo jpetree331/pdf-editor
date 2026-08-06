@@ -24,8 +24,16 @@
 
   /* Semantics — reserved deliberately */
   --danger: #e5534b;          /* destructive actions + redaction only */
+  --danger-soft-bg: #e5534b1a;
+  --danger-soft-border: #e5534b55;
   --warn: #d9a743;            /* honest-limitation notices only */
   --ok: #57ab5a;
+
+  /* Derived accents */
+  --accent-glow: #4f8ef70d;
+  --canvas-shade: #10111480;
+  /* Redaction cover. Must match REDACT_FILL_HEX in src/config/constants.ts. */
+  --redact-fill: #101010;
 
   /* Type */
   --font-ui: 'Segoe UI', system-ui, -apple-system, sans-serif;

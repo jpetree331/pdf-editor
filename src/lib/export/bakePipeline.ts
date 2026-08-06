@@ -24,6 +24,7 @@ import type {
   TextOverlay,
 } from '../core/types'
 import { BLANK_SOURCE, totalRotation } from '../core/types'
+import { wrapLines } from '../core/textWrap'
 import { HIGHLIGHT_OPACITY } from '../../config/constants'
 
 export interface RasterizedPage {
@@ -91,13 +92,21 @@ export async function bakeDocument(
     }
 
     outPage.setRotation(degrees(totalRotation(page)))
+    // Overlay/crop rects are relative to the page's view box; pdf-lib draws in
+    // raw user space, so shift by the view-box origin.
+    const origin = page.baseOrigin
     if (page.cropBox) {
-      outPage.setCropBox(page.cropBox.x, page.cropBox.y, page.cropBox.width, page.cropBox.height)
+      outPage.setCropBox(
+        page.cropBox.x + origin.x,
+        page.cropBox.y + origin.y,
+        page.cropBox.width,
+        page.cropBox.height,
+      )
     }
 
     const overlays = [...(state.overlaysByPage[page.id] ?? [])].sort((a, b) => a.zIndex - b.zIndex)
     for (const overlay of overlays) {
-      await drawOverlay(out, outPage, overlay, fonts, imageCache)
+      await drawOverlay(out, outPage, overlay, origin, fonts, imageCache)
     }
     onProgress?.((i + 1) / pages.length)
   }
@@ -111,13 +120,19 @@ async function drawOverlay(
   doc: PDFDocument,
   page: OutPage,
   overlay: OverlayObject,
+  origin: { x: number; y: number },
   fonts: { regular: PDFFont; bold: PDFFont },
   imageCache: Map<OverlayObject, Awaited<ReturnType<PDFDocument['embedPng']>>>,
 ): Promise<void> {
-  const { rect } = overlay
+  const rect = {
+    x: overlay.rect.x + origin.x,
+    y: overlay.rect.y + origin.y,
+    width: overlay.rect.width,
+    height: overlay.rect.height,
+  }
   switch (overlay.type) {
     case 'text':
-      drawTextOverlay(page, overlay, overlay.bold ? fonts.bold : fonts.regular)
+      drawTextOverlay(page, overlay, rect, overlay.bold ? fonts.bold : fonts.regular)
       return
     case 'highlight':
       page.drawRectangle({
@@ -176,30 +191,15 @@ function sanitizeForFont(font: PDFFont, text: string): string {
 }
 
 export function wrapText(font: PDFFont, text: string, fontSize: number, maxWidth: number): string[] {
-  const lines: string[] = []
-  for (const rawLine of text.split('\n')) {
-    const words = rawLine.split(/\s+/).filter(Boolean)
-    if (words.length === 0) {
-      lines.push('')
-      continue
-    }
-    let current = ''
-    for (const word of words) {
-      const candidate = current ? `${current} ${word}` : word
-      if (font.widthOfTextAtSize(candidate, fontSize) <= maxWidth || !current) {
-        current = candidate
-      } else {
-        lines.push(current)
-        current = word
-      }
-    }
-    lines.push(current)
-  }
-  return lines
+  return wrapLines(text, maxWidth, (s) => font.widthOfTextAtSize(s, fontSize))
 }
 
-function drawTextOverlay(page: OutPage, overlay: TextOverlay, font: PDFFont): void {
-  const { rect } = overlay
+function drawTextOverlay(
+  page: OutPage,
+  overlay: TextOverlay,
+  rect: { x: number; y: number; width: number; height: number },
+  font: PDFFont,
+): void {
   const size = overlay.fontSize
   const text = sanitizeForFont(font, overlay.text)
   const lines = wrapText(font, text, size, rect.width)

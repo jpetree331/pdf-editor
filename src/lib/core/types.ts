@@ -37,8 +37,18 @@ export interface PageState {
   baseRotation: Rotation
   /** Crop in unrotated PDF-point space (bottom-left origin); null = full page. */
   cropBox: Rect | null
-  /** MediaBox size in the page's unrotated space. */
+  /**
+   * Size of the page's effective view box (native CropBox ∩ MediaBox) in
+   * unrotated space — the region pdf.js actually renders. Overlay rects are
+   * relative to THIS box's lower-left corner.
+   */
   baseSize: { width: number; height: number }
+  /**
+   * Lower-left corner of that view box in raw PDF user space. Display code
+   * never needs it; the bake pipeline adds it when drawing into pdf-lib pages
+   * (whose coordinates are user-space, not box-relative).
+   */
+  baseOrigin: { x: number; y: number }
 }
 
 /** Total display rotation for a page (source /Rotate + session rotation). */
