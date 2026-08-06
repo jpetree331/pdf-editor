@@ -1,0 +1,19 @@
+.sel-box {
+  position: absolute;
+  z-index: var(--z-selection);
+  pointer-events: none;
+  border: 1px solid var(--accent);
+}
+.sel-handle {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  background: #fff;
+  border: 1.5px solid var(--accent);
+  border-radius: 2px;
+  pointer-events: auto;
+}
+.sel-nw { top: -5px; left: -5px; cursor: nwse-resize; }
+.sel-se { bottom: -5px; right: -5px; cursor: nwse-resize; }
+.sel-ne { top: -5px; right: -5px; cursor: nesw-resize; }
+.sel-sw { bottom: -5px; left: -5px; cursor: nesw-resize; }

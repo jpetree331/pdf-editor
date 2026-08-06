@@ -9,9 +9,9 @@ export default defineConfig({
     target: 'es2022',
     rollupOptions: {
       output: {
-        manualChunks: {
-          pdfjs: ['pdfjs-dist'],
-          pdflib: ['pdf-lib'],
+        manualChunks(id: string) {
+          if (id.includes('pdfjs-dist')) return 'pdfjs'
+          if (id.includes('pdf-lib')) return 'pdflib'
         },
       },
     },

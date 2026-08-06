@@ -1,0 +1,51 @@
+.overlay-layer {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-overlay-objects);
+}
+
+.ov {
+  position: absolute;
+  overflow: visible;
+}
+.ov-selected { outline: 1.5px solid var(--accent); outline-offset: 0; }
+
+.ov-text {
+  white-space: pre-wrap;
+  overflow: hidden;
+  word-break: break-word;
+  user-select: none;
+  cursor: default;
+}
+.ov-text-placeholder { color: #9995; font-style: italic; }
+
+.ov-text-edit {
+  position: absolute;
+  top: 0;
+  left: 0;
+  resize: none;
+  background: #ffffffd8;
+  border: 1px solid var(--accent);
+  border-radius: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.ov-image {
+  display: block;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
+.ov-highlight,
+.ov-erase,
+.ov-redact {
+  position: absolute;
+  inset: 0;
+}
+.ov-highlight { mix-blend-mode: multiply; }
+.ov-redact {
+  background: #101010;
+  outline: 1px dashed var(--danger);
+}

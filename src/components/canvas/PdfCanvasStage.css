@@ -1,0 +1,59 @@
+.stage {
+  position: relative;
+  background: var(--bg-canvas);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.stage-scroll {
+  flex: 1;
+  overflow: auto;
+  display: grid;
+  place-items: center;
+  padding: var(--sp-5);
+}
+.stage-page {
+  position: relative;
+  background: #fff;
+  box-shadow: var(--shadow-page);
+  touch-action: none;
+}
+.stage-canvas { display: block; position: absolute; inset: 0; }
+
+.stage-nav {
+  position: absolute;
+  bottom: var(--sp-3);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+  padding: 2px var(--sp-2);
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  z-index: var(--z-panels);
+}
+
+.crop-shade {
+  position: absolute;
+  background: #10111480;
+  z-index: var(--z-selection);
+  pointer-events: none;
+}
+.crop-border {
+  position: absolute;
+  border: 1.5px dashed var(--accent);
+  z-index: var(--z-selection);
+  pointer-events: none;
+}
+.crop-marquee {
+  position: absolute;
+  border: 1.5px dashed var(--accent);
+  background: var(--accent-soft);
+  z-index: var(--z-selection);
+  pointer-events: none;
+}
