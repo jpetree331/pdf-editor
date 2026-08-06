@@ -21,6 +21,22 @@ export function applyCommand(
       }
     }
 
+    case 'ADD_OVERLAYS': {
+      const overlaysByPage = { ...state.overlaysByPage }
+      for (const overlay of payload.overlays) {
+        overlaysByPage[overlay.pageId] = [...(overlaysByPage[overlay.pageId] ?? []), overlay]
+      }
+      return { ...state, overlaysByPage }
+    }
+
+    case 'REMOVE_OVERLAYS': {
+      const overlaysByPage = { ...state.overlaysByPage }
+      for (const { pageId, overlayId } of payload.entries) {
+        overlaysByPage[pageId] = (overlaysByPage[pageId] ?? []).filter((o) => o.id !== overlayId)
+      }
+      return { ...state, overlaysByPage }
+    }
+
     case 'UPDATE_OVERLAY': {
       const overlays = state.overlaysByPage[payload.pageId] ?? []
       return {

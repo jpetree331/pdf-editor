@@ -62,6 +62,28 @@ describe('reducer + inverse round trips', () => {
     expectInverseRestores(baseState(), { kind: 'ADD_OVERLAY', overlay: textOverlay('o1', 'p1') })
   })
 
+  it('ADD_OVERLAYS adds atomically and its inverse removes all', () => {
+    expectInverseRestores(baseState(), {
+      kind: 'ADD_OVERLAYS',
+      overlays: [textOverlay('o1', 'p1'), textOverlay('o2', 'p1'), textOverlay('o3', 'p2')],
+    })
+  })
+
+  it('REMOVE_OVERLAYS restores the removed overlays on undo', () => {
+    let state = baseState()
+    state = applyCommand(state, {
+      kind: 'ADD_OVERLAYS',
+      overlays: [textOverlay('o1', 'p1'), textOverlay('o2', 'p2')],
+    })
+    expectInverseRestores(state, {
+      kind: 'REMOVE_OVERLAYS',
+      entries: [
+        { pageId: 'p1', overlayId: 'o1' },
+        { pageId: 'p2', overlayId: 'o2' },
+      ],
+    })
+  })
+
   it('UPDATE_OVERLAY reverts exactly the patched keys', () => {
     let state = baseState()
     state = applyCommand(state, { kind: 'ADD_OVERLAY', overlay: textOverlay('o1', 'p1') })

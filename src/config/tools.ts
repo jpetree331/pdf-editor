@@ -3,12 +3,14 @@
 // never branching in components.
 import type { ToolBehavior } from '../tools/types'
 import { selectTool } from '../tools/selectTool'
+import { editTextTool } from '../tools/editTextTool'
 import { textTool } from '../tools/textTool'
 import { placeTool } from '../tools/placeTool'
 import { highlightTool, eraseTool, redactTool, cropTool } from '../tools/boxTools'
 
 export type CanvasToolId =
   | 'select'
+  | 'editText'
   | 'text'
   | 'highlight'
   | 'image'
@@ -36,6 +38,14 @@ export const TOOL_REGISTRY: Record<CanvasToolId, CanvasToolDefinition> = {
     cursor: 'default',
     behavior: selectTool,
     hint: 'Click an object to select it. Drag to move, use handles to resize. Double-click text to edit.',
+  },
+  editText: {
+    id: 'editText',
+    label: 'Edit text',
+    icon: 'editText',
+    cursor: 'text',
+    behavior: editTextTool,
+    hint: 'Click a line of the document’s text to rewrite it. The original is covered and replaced in a close-matching font. The covered text stays in the file — use Redact for anything sensitive.',
   },
   text: {
     id: 'text',
@@ -97,6 +107,7 @@ export const TOOL_REGISTRY: Record<CanvasToolId, CanvasToolDefinition> = {
 
 export const TOOL_ORDER: CanvasToolId[] = [
   'select',
+  'editText',
   'text',
   'highlight',
   'image',

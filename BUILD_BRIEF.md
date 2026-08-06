@@ -81,6 +81,9 @@ pass on the affected flows — do this, don't skip), and reports divergences.
   needs a wasm OCR engine decision before any sprint promises it.
 - ⚠️ GATE B — true text *editing* of existing PDF text (content-stream
   rewrite): research-grade; do not promise without a spike sprint.
+  (Sprint 2 shipped the assisted middle path: click-a-line cover-and-retype
+  via `editTextTool`. The gate stays open only for genuine in-place editing
+  with original-font fidelity.)
 
 ## Verification baseline
 

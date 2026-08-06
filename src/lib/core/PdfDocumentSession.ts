@@ -151,6 +151,12 @@ export class PdfDocumentSession {
     this.dispatch({ kind: 'ADD_OVERLAY', overlay }, `Add ${overlay.type}`)
   }
 
+  /** Add several overlays as ONE undo step (e.g. edit-text's cover + replacement). */
+  addOverlays(overlays: OverlayObject[], label: string): void {
+    if (overlays.length === 0) return
+    this.dispatch({ kind: 'ADD_OVERLAYS', overlays }, label)
+  }
+
   updateOverlay(pageId: PageId, overlayId: OverlayId, patch: Partial<OverlayObject>): void {
     this.dispatch({ kind: 'UPDATE_OVERLAY', pageId, overlayId, patch }, 'Edit object')
   }

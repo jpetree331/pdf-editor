@@ -16,6 +16,21 @@ export function computeInverse(
         overlayId: payload.overlay.id,
       }
 
+    case 'ADD_OVERLAYS':
+      return {
+        kind: 'REMOVE_OVERLAYS',
+        entries: payload.overlays.map((o) => ({ pageId: o.pageId, overlayId: o.id })),
+      }
+
+    case 'REMOVE_OVERLAYS': {
+      const overlays = payload.entries
+        .map(({ pageId, overlayId }) =>
+          (stateBefore.overlaysByPage[pageId] ?? []).find((o) => o.id === overlayId),
+        )
+        .filter((o): o is NonNullable<typeof o> => o !== undefined)
+      return { kind: 'ADD_OVERLAYS', overlays }
+    }
+
     case 'UPDATE_OVERLAY': {
       const overlays = stateBefore.overlaysByPage[payload.pageId] ?? []
       const current = overlays.find((o) => o.id === payload.overlayId)

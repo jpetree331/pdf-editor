@@ -6,6 +6,7 @@ Open a PDF (or several) and do the things you'd normally need Acrobat for:
 
 - **Organize** — merge PDFs, split into parts, reorder pages by dragging thumbnails, rotate, delete, insert blank pages or another PDF, extract pages, crop.
 - **Sign** — draw, type, or upload your signature and place it on the page.
+- **Edit text** — click a line of the document's own text and rewrite it. The original is covered and replaced in a close-matching font.
 - **Mark up** — add text boxes, highlight, place images.
 - **Erase & redact** — cover content cosmetically, or *truly remove* it (see below).
 - **Compress** — rebuild the file smaller, or go aggressive for the smallest possible size.
@@ -20,6 +21,8 @@ Drop several PDFs on the start screen to combine them in order. Undo/redo works 
 **What's the difference between Erase and Redact?** Erase paints an opaque box over content — quick for tidying, but the content is still inside the file underneath. Redact actually destroys the content: on export, any page with a redaction is re-rendered as a flat image with the box burned in, so the text underneath is gone and unrecoverable. The trade-off is that a redacted page is no longer selectable text. For anything sensitive, use Redact.
 
 **How good is the Word/Excel conversion?** It's a best-effort reconstruction from the text inside the PDF. Simple documents convert well; complex layouts, multi-column pages, and decorative formatting will lose fidelity. Scanned pages (no text layer) are embedded as images in Word and flagged in Excel. Excel conversion works best on pages that actually contain tables.
+
+**How does Edit text work — is it really editing the PDF's text?** It's the assisted version of what every lightweight PDF editor does: the original line is covered with a fitted opaque box and your replacement is typed on top, pre-filled with the original words at the original size and position. Two honest limits: the replacement renders in Helvetica (a close match, not the document's exact font), and the covered text still exists inside the file underneath — so for anything sensitive, use Redact, not Edit text.
 
 **Is the signature a legal digital signature?** It's a visual signature flattened into the page — the same as printing, signing, and scanning. It is not a certificate-based cryptographic signature.
 

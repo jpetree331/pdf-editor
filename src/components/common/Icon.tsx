@@ -10,6 +10,13 @@ const PATHS: Record<string, JSX.Element> = {
       <path d="M7 16h6" />
     </>
   ),
+  editText: (
+    <>
+      <path d="M3.5 5h10M3.5 8.5h6" />
+      <path d="M10.5 15.2l6-6 1.8 1.8-6 6h-1.8v-1.8z" />
+      <path d="M3.5 17h4" />
+    </>
+  ),
   highlight: (
     <>
       <path d="M4 13l7-7 3.5 3.5-7 7H4z" />

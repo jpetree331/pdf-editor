@@ -14,6 +14,8 @@ import type {
 
 export type CommandPayload =
   | { kind: 'ADD_OVERLAY'; overlay: OverlayObject }
+  | { kind: 'ADD_OVERLAYS'; overlays: OverlayObject[] }
+  | { kind: 'REMOVE_OVERLAYS'; entries: Array<{ pageId: PageId; overlayId: OverlayId }> }
   | {
       kind: 'UPDATE_OVERLAY'
       pageId: PageId
