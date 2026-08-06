@@ -8,7 +8,9 @@ import {
   useMemo,
   useRef,
   useState,
+  type Dispatch,
   type ReactNode,
+  type SetStateAction,
 } from 'react'
 import { PdfDocumentSession, PdfLoadError } from '../lib/core/PdfDocumentSession'
 import { disposeAllProxies } from '../lib/render/pdfjsLoader'
@@ -49,7 +51,8 @@ export interface EditorContextValue {
   setPendingPlacement: (p: PendingPlacement | null) => void
 
   zoom: number
-  setZoom: (z: number) => void
+  /** React state setter — functional form is safe for rapid wheel bursts. */
+  setZoom: Dispatch<SetStateAction<number>>
 
   dialog: DialogId
   setDialog: (d: DialogId) => void

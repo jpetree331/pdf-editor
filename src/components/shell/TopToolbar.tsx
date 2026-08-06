@@ -85,7 +85,9 @@ export function TopToolbar() {
           onClick={() => setZoom(Math.max(ZOOM_MIN, zoom - ZOOM_STEP))}
           disabled={zoom <= ZOOM_MIN}
         />
-        <span className="toolbar-zoom">{Math.round(zoom * 100)}%</span>
+        <span className="toolbar-zoom" title="Ctrl + scroll wheel to zoom">
+          {Math.round(zoom * 100)}%
+        </span>
         <IconButton
           icon="zoomIn"
           label="Zoom in"

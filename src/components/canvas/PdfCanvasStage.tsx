@@ -1,6 +1,6 @@
 // The workspace canvas: renders the current page, maps pointer events into
 // PDF space, and dispatches them to the active tool by registry lookup.
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useEditor } from '../../state/EditorContext'
 import { useSessionState } from '../../hooks/useSessionState'
 import { usePageRender } from '../../hooks/usePageRender'
@@ -11,6 +11,7 @@ import type { GestureState, ToolContext, ToolPointerEvent } from '../../tools/ty
 import { OverlayLayer } from './OverlayLayer'
 import { SelectionHandles } from './SelectionHandles'
 import { IconButton } from '../common/primitives'
+import { ZOOM_MAX, ZOOM_MIN, ZOOM_WHEEL_FACTOR } from '../../config/constants'
 import './PdfCanvasStage.css'
 
 export function PdfCanvasStage() {
@@ -26,6 +27,7 @@ export function PdfCanvasStage() {
     setPendingPlacement,
     setEditingTextId,
     zoom,
+    setZoom,
   } = editor
   const state = useSessionState(session)
   const page = state.pages.find((p) => p.id === currentPageId) ?? state.pages[0] ?? null
@@ -33,9 +35,59 @@ export function PdfCanvasStage() {
 
   const canvasRef = usePageRender(state, page, zoom)
   const pageElRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
   const gestureRef = useRef<GestureState>({ start: null, draft: null })
   const [liveDraft, setLiveDraft] = useState<OverlayObject | null>(null)
   const [marquee, setMarquee] = useState<Rect | null>(null)
+  // Where on the page the cursor sat when a wheel-zoom fired, so the layout
+  // effect below can keep that point under the cursor after the re-render.
+  const zoomAnchorRef = useRef<{
+    fx: number
+    fy: number
+    clientX: number
+    clientY: number
+  } | null>(null)
+
+  // Ctrl+wheel (and trackpad pinch, which browsers report the same way)
+  // zooms toward the cursor. Native non-passive listener — React's onWheel
+  // can't preventDefault the browser's own page zoom.
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const onWheel = (e: WheelEvent) => {
+      if (!e.ctrlKey) return
+      e.preventDefault()
+      const pageEl = pageElRef.current
+      if (pageEl) {
+        const r = pageEl.getBoundingClientRect()
+        zoomAnchorRef.current = {
+          fx: (e.clientX - r.left) / r.width,
+          fy: (e.clientY - r.top) / r.height,
+          clientX: e.clientX,
+          clientY: e.clientY,
+        }
+      }
+      const factor = e.deltaY < 0 ? ZOOM_WHEEL_FACTOR : 1 / ZOOM_WHEEL_FACTOR
+      // Functional update: rapid wheel bursts arrive faster than re-renders,
+      // so each tick must compound on the latest zoom, not the rendered one.
+      setZoom((z) => Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, z * factor)))
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+    return () => el.removeEventListener('wheel', onWheel)
+  }, [setZoom])
+
+  useLayoutEffect(() => {
+    const anchor = zoomAnchorRef.current
+    const pageEl = pageElRef.current
+    const el = scrollRef.current
+    if (!anchor || !pageEl || !el) return
+    zoomAnchorRef.current = null
+    const r = pageEl.getBoundingClientRect()
+    el.scrollBy({
+      left: r.left + anchor.fx * r.width - anchor.clientX,
+      top: r.top + anchor.fy * r.height - anchor.clientY,
+    })
+  }, [zoom])
 
   const mapper = useMemo(() => {
     if (!page) return null
@@ -96,7 +148,7 @@ export function PdfCanvasStage() {
 
   return (
     <div className="stage">
-      <div className="stage-scroll">
+      <div className="stage-scroll" ref={scrollRef}>
         <div
           ref={pageElRef}
           className="stage-page"
